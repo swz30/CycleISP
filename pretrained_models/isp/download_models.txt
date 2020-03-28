@@ -1,0 +1,17 @@
+
+Generate RAW noisy data: download model https://drive.google.com/file/d/1CQAonY2tnXUXo_7xynxh3QyQNP_GsbHa/view?usp=sharing and place in this directory
+
+
+#########################
+
+
+Generate RGB noisy data: download model the following models and place them in this directory 
+1) rgb2raw:  https://drive.google.com/file/d/1sYUYFeXam9X8UNhucK7FIjDLm-GO55sn/view?usp=sharing
+2) raw2rgb:  https://drive.google.com/file/d/1XLo-ec92KCnGEn-29NRK651NcIjgjJ9G/view?usp=sharing
+3) ccm:      https://drive.google.com/file/d/1j6VRl4URdrjQDe_94E6nQB8fCV2GtNnN/view?usp=sharing
+
+
+#################################
+
+
+To download all models at once: use this link  https://drive.google.com/drive/folders/1cHRfWPjFpTPrvBm7B4iTMEVZ4ABfjmxW?usp=sharing
