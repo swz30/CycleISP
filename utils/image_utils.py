@@ -18,6 +18,10 @@ def is_png_file(filename):
 def is_pkl_file(filename):
     return any(filename.endswith(extension) for extension in [".pkl"])
 
+def load_dict(filename_):
+    with open(filename_, 'rb') as f:
+        ret_dict = pickle.load(f)
+    return ret_dict
 
 def load_pkl(filename_):
     with open(filename_, 'rb') as f:
