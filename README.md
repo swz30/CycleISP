@@ -6,7 +6,7 @@
 
 **Supplementary**: [pdf](https://drive.google.com/file/d/1FHOPCrmgYcez2ZTI0-roKEbyeXJIulSJ/view?usp=sharing)
 
-**Conference Video**:
+**Video Presentation**:
 
 [![CycleISP Video](https://img.youtube.com/vi/41XKXY--7_E/0.jpg)](https://www.youtube.com/watch?v=41XKXY--7_E)
 
