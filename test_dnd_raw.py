@@ -148,6 +148,11 @@ for i in tqdm(range(50)):
         # Saves denoised image crop.
         save_file = os.path.join(args.result_dir+ 'matfile/', '%04d_%02d.mat' % (i + 1, k + 1))
         sio.savemat(save_file, {'Idenoised_crop': Idenoised_crop})
+        
+        if args.save_images:
+            denoised_img = Idenoised_crop*255
+            save_file = os.path.join(args.result_dir+ 'png/', '%04d_%02d.png' % (i + 1, k + 1))
+            lycon.save(save_file, denoised_img.astype(np.uint8))
 
 bundle_submissions_raw(args.result_dir+'matfile/', 'raw_results_for_server_submission/')
 os.system("rm {}".format(args.result_dir+'matfile/*.mat'))
