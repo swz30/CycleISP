@@ -61,6 +61,9 @@ python generate_rgb_data.py
 ```
 
 ## Evaluation
+You can download, at once, the complete repository of CycleISP (including pre-trained models, datasets, results, etc) from this Google Drive  [link](https://drive.google.com/drive/folders/1GWAvtIqCfBewYNF14o_w2F6p03oMl3Dz?usp=sharing), or evaluate individual tasks with the following instructions:
+
+
 #### Denoising RAW images of DND
 - Download the [model](https://drive.google.com/file/d/1yjI3JtfC1IluGB0LRlnpPTAY_UyY9mG8/view?usp=sharing) and place it in ./pretrained_models/denoising/
 - Download RAW [images](https://drive.google.com/drive/folders/15Bay1UJURlbP7kpS10_fJ96MxQ6B03Xv?usp=sharing) of DND and place them in ./datasets/dnd/dnd_raw/
@@ -90,7 +93,7 @@ python test_dnd_rgb.py --save_images
 python test_sidd_rgb.py --save_images
 ```
 ## Results on Real Image Datasets
-Experiments are performed for denoising images in RAW and sRGB spaces.
+Experiments are performed for denoising images in RAW and sRGB spaces.  Results produced by CycleISP can be downloaded from Google Drive [link](https://drive.google.com/drive/folders/1auihLXYUEkhARxi9NvTtjjE_6-bzJHzd?usp=sharing).
 
 ### Results for RAW Denoising
 
