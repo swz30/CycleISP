@@ -72,7 +72,7 @@ with torch.no_grad():
             for batch in range(len(raw_gt)):
                 denoised_img = utils.unpack_raw(raw_restored[batch,:,:,:].unsqueeze(0))
                 denoised_img = denoised_img.permute(0, 2, 3, 1).cpu().detach().numpy()[0] *255
-                denoised_img = np.squeeze(np.stack((denoised_img,) * 3, -1))*255
+                denoised_img = np.squeeze(np.stack((denoised_img,) * 3, -1))
                 lycon.save(args.result_dir + filenames[batch][:-4] + '.png', denoised_img.astype(np.uint8))
                 
 
