@@ -19,13 +19,11 @@ import scipy.io as sio
 import h5py
 import numpy as np
 from networks.denoising_raw import DenoiseNet
-# from dataloaders.data_raw import get_test_data 
 
 import utils
 import lycon
 from utils.bundle_submissions import bundle_submissions_raw
-
-
+from skimage import img_as_ubyte
 
 parser = argparse.ArgumentParser(description='RAW denoising evaluation on the DND dataset')
 parser.add_argument('--input_dir', default='./datasets/dnd/dnd_raw/',
@@ -83,7 +81,6 @@ for i in tqdm(range(50)):
     img = h5py.File(filename, 'r')
     noisy = np.float32(np.array(img['Inoisy']).T)
 
-    #
     # Loads raw Bayer color pattern.
     bayer_pattern = np.asarray(info[info['camera'][0][i]]['pattern']).tolist()
 
@@ -150,9 +147,9 @@ for i in tqdm(range(50)):
         sio.savemat(save_file, {'Idenoised_crop': Idenoised_crop})
         
         if args.save_images:
-            denoised_img = Idenoised_crop*255
+            denoised_img = img_as_ubyte(Idenoised_crop)
             save_file = os.path.join(args.result_dir+ 'png/', '%04d_%02d.png' % (i + 1, k + 1))
-            lycon.save(save_file, denoised_img.astype(np.uint8))
+            lycon.save(save_file, denoised_img)
 
 bundle_submissions_raw(args.result_dir+'matfile/', 'raw_results_for_server_submission/')
 os.system("rm {}".format(args.result_dir+'matfile/*.mat'))

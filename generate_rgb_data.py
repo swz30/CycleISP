@@ -21,6 +21,7 @@ from dataloaders.data_rgb import get_rgb_data
 from utils.noise_sampling import random_noise_levels_dnd, random_noise_levels_sidd, add_noise
 import utils
 import lycon
+from skimage import img_as_ubyte
 
 parser = argparse.ArgumentParser(description='From clean RGB images, generate {RGB_clean, RGB_noisy} pairs')
 parser.add_argument('--input_dir', default='./datasets/sample_rgb_images/',
@@ -35,7 +36,6 @@ parser.add_argument('--save_images', action='store_true', help='Save synthesized
 
 args = parser.parse_args()
 
-
 os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
 os.environ["CUDA_VISIBLE_DEVICES"] = args.gpus
 
@@ -45,8 +45,6 @@ utils.mkdir(args.result_dir+'noisy')
 test_dataset = get_rgb_data(args.input_dir)
 test_loader = DataLoader(dataset=test_dataset, batch_size=4, shuffle=False, num_workers=2, drop_last=False)
 
-
-
 model_rgb2raw = Rgb2Raw()
 model_ccm     = CCM()
 model_raw2rgb = Raw2Rgb()
@@ -54,7 +52,6 @@ model_raw2rgb = Raw2Rgb()
 utils.load_checkpoint(model_rgb2raw,args.weights_rgb2raw)
 utils.load_checkpoint(model_ccm,args.weights_ccm)
 utils.load_checkpoint(model_raw2rgb,args.weights_raw2rgb)
-#print("===>Testing using weights: ", args.weights)
 
 model_rgb2raw.cuda()
 model_ccm.cuda()
@@ -68,13 +65,13 @@ model_rgb2raw.eval()
 model_ccm.eval()
 model_raw2rgb.eval()
 
-
 with torch.no_grad():
     for ii, data in enumerate(tqdm(test_loader), 0):
         rgb_gt    = data[0].cuda()
         filenames = data[1]
         padh = data[2]
         padw = data[3]
+
         ## Convert clean rgb image to clean raw image
         raw_gt = model_rgb2raw(rgb_gt)       ## raw_gt is in RGGB format
         raw_gt = torch.clamp(raw_gt,0,1)
@@ -87,7 +84,6 @@ with torch.no_grad():
             raw_noisy = add_noise(raw_gt[j], shot_noise, read_noise, use_cuda=True)
             raw_noisy = torch.clamp(raw_noisy,0,1)  ### CLIP NOISE
             
-
             #### Convert raw noisy to rgb noisy ####
             ccm_tensor = model_ccm(rgb_gt[j].unsqueeze(0))
             rgb_noisy = model_raw2rgb(raw_noisy.unsqueeze(0),ccm_tensor) 
@@ -96,13 +92,10 @@ with torch.no_grad():
             rgb_noisy = rgb_noisy.permute(0, 2, 3, 1).squeeze().cpu().detach().numpy()
 
             rgb_clean = rgb_gt[j].permute(1,2,0).cpu().detach().numpy()
+
             ## Unpadding
             rgb_clean = rgb_clean[padh[j]:-padh[j],padw[j]:-padw[j],:]   
             rgb_noisy = rgb_noisy[padh[j]:-padh[j],padw[j]:-padw[j],:]   
-            # import pdb;pdb.set_trace()
 
-            lycon.save(args.result_dir+'clean/'+filename[:-4]+'.png',(rgb_clean*255).astype(np.uint8))
-            lycon.save(args.result_dir+'noisy/'+filename[:-4]+'.png',(rgb_noisy*255).astype(np.uint8))
-
-           
-
+            lycon.save(args.result_dir+'clean/'+filename[:-4]+'.png',img_as_ubyte(rgb_clean))
+            lycon.save(args.result_dir+'noisy/'+filename[:-4]+'.png',img_as_ubyte(rgb_noisy))

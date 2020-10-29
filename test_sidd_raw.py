@@ -21,6 +21,7 @@ from dataloaders.data_raw import get_validation_data
 
 import utils
 import lycon
+from skimage import img_as_ubyte
 
 parser = argparse.ArgumentParser(description='RAW denoising evaluation on the validation set of SIDD')
 parser.add_argument('--input_dir', default='./datasets/sidd/sidd_raw/',
@@ -34,7 +35,6 @@ parser.add_argument('--save_images', action='store_true', help='Save denoised im
 
 args = parser.parse_args()
 
-
 os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
 os.environ["CUDA_VISIBLE_DEVICES"] = args.gpus
 
@@ -43,10 +43,7 @@ utils.mkdir(args.result_dir)
 test_dataset = get_validation_data(args.input_dir)
 test_loader = DataLoader(dataset=test_dataset, batch_size=16, shuffle=False, num_workers=8, drop_last=False)
 
-
-
 model_restoration = DenoiseNet()
-
 
 utils.load_checkpoint(model_restoration,args.weights)
 print("===>Testing using weights: ", args.weights)
@@ -71,9 +68,9 @@ with torch.no_grad():
         if args.save_images:
             for batch in range(len(raw_gt)):
                 denoised_img = utils.unpack_raw(raw_restored[batch,:,:,:].unsqueeze(0))
-                denoised_img = denoised_img.permute(0, 2, 3, 1).cpu().detach().numpy()[0] *255
+                denoised_img = denoised_img.permute(0, 2, 3, 1).cpu().detach().numpy()[0]
                 denoised_img = np.squeeze(np.stack((denoised_img,) * 3, -1))
-                lycon.save(args.result_dir + filenames[batch][:-4] + '.png', denoised_img.astype(np.uint8))
+                lycon.save(args.result_dir + filenames[batch][:-4] + '.png', img_as_ubyte(denoised_img))
                 
 
 psnr_val_raw = sum(psnr_val_raw)/len(psnr_val_raw)

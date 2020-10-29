@@ -21,7 +21,7 @@ from dataloaders.data_rgb import get_test_data
 import utils
 import lycon
 from utils.bundle_submissions import bundle_submissions_srgb_v1
-
+from skimage import img_as_ubyte
 
 parser = argparse.ArgumentParser(description='RGB denoising evaluation on DND dataset')
 parser.add_argument('--input_dir', default='./datasets/dnd/dnd_rgb/',
@@ -45,8 +45,6 @@ utils.mkdir(args.result_dir+'png')
 test_dataset = get_test_data(args.input_dir)
 test_loader = DataLoader(dataset=test_dataset, batch_size=32, shuffle=False, num_workers=8, drop_last=False)
 
-
-
 model_restoration = DenoiseNet()
 
 utils.load_checkpoint(model_restoration,args.weights)
@@ -57,7 +55,6 @@ model_restoration.cuda()
 model_restoration=nn.DataParallel(model_restoration)
 
 model_restoration.eval()
-
 
 with torch.no_grad():
     psnr_val_rgb = []
@@ -72,13 +69,10 @@ with torch.no_grad():
 
         if args.save_images:
             for batch in range(len(rgb_noisy)):
-                #temp = np.concatenate((rgb_noisy[batch]*255, rgb_restored[batch]*255),axis=1)
-                denoised_img = rgb_restored[batch]*255
-                lycon.save(args.result_dir + 'png/'+ filenames[batch][:-4] + '.png', denoised_img.astype(np.uint8))
+                denoised_img = img_as_ubyte(rgb_restored[batch])
+                lycon.save(args.result_dir + 'png/'+ filenames[batch][:-4] + '.png', denoised_img)
                 save_file = os.path.join(args.result_dir+ 'matfile/', filenames[batch][:-4] +'.mat')
                 sio.savemat(save_file, {'Idenoised_crop': np.float32(rgb_restored[batch])})
-
-  
 
 bundle_submissions_srgb_v1(args.result_dir+'matfile/', 'srgb_results_for_server_submission/')
 os.system("rm {}".format(args.result_dir+'matfile/*.mat'))
