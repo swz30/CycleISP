@@ -94,8 +94,8 @@ with torch.no_grad():
             rgb_clean = rgb_gt[j].permute(1,2,0).cpu().detach().numpy()
 
             ## Unpadding
-            rgb_clean = rgb_clean[padh[j]:-padh[j],padw[j]:-padw[j],:]   
-            rgb_noisy = rgb_noisy[padh[j]:-padh[j],padw[j]:-padw[j],:]   
+            rgb_clean = rgb_clean[padh[j]:-padh[j],padw[j]:-padw[j],:].copy()
+            rgb_noisy = rgb_noisy[padh[j]:-padh[j],padw[j]:-padw[j],:].copy()   
 
             lycon.save(args.result_dir+'clean/'+filename[:-4]+'.png',img_as_ubyte(rgb_clean))
             lycon.save(args.result_dir+'noisy/'+filename[:-4]+'.png',img_as_ubyte(rgb_noisy))
