@@ -1,9 +1,9 @@
 import torch
 import numpy as np
-from skimage.measure.simple_metrics import compare_psnr
+from skimage.metrics import peak_signal_noise_ratio
 import pickle
 import lycon
-from skimage.measure import compare_ssim
+from skimage.metrics import structural_similarity
 
 
 def is_numpy_file(filename):
@@ -47,7 +47,7 @@ def batch_PSNR(img, imclean, data_range):
     Iclean = imclean.data.cpu().numpy().astype(np.float32)
     PSNR = []
     for i in range(Img.shape[0]):
-        psnr = compare_psnr(Iclean[i,:,:,:], Img[i,:,:,:], data_range=data_range)
+        psnr =  peak_signal_noise_ratio(Iclean[i,:,:,:], Img[i,:,:,:], data_range=data_range)
         if np.isinf(psnr):
             continue
         PSNR.append(psnr)
@@ -59,7 +59,7 @@ def batch_SSIM(img, imclean):
     Iclean = imclean.data.cpu().numpy().astype(np.float32)
     SSIM = []
     for i in range(Img.shape[0]):
-        ssim = compare_ssim(Iclean[i,:,:,:], Img[i,:,:,:], gaussian_weights=True, use_sample_covariance=False, multichannel =True)
+        ssim = structural_similarity(Iclean[i,:,:,:], Img[i,:,:,:], gaussian_weights=True, use_sample_covariance=False, multichannel =True)
         SSIM.append(ssim)
     return sum(SSIM)/len(SSIM)
 
